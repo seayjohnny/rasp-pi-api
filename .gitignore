@@ -4,6 +4,9 @@ build/
 # Ignore .idea
 **/.idea/**
 
+# Ignore workspace.xml
+**/.idea/workspace.xml
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
