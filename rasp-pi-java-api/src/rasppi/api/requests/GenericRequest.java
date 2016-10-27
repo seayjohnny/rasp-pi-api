@@ -1,11 +1,11 @@
-package raspipi.api.requests;
+package rasppi.api.requests;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-import raspipi.api.objects.ResponseObject;
-import raspipi.api.exceptions.InvalidRequestMethod;
-import raspipi.api.exceptions.MissingParams;
+import rasppi.api.objects.ResponseObject;
+import rasppi.api.exceptions.InvalidRequestMethod;
+import rasppi.api.exceptions.MissingParams;
 
 import java.io.IOException;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package raspipi.api.objects;
+package rasppi.api.objects;
 
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponse;
@@ -87,7 +87,7 @@ public class ResponseObject {
     /**
      * convertStreamtoMap:
      *      A helper method that converts an InputStream to a Map<String, String> object.
-     *      
+     *
      * @param is
      * @return
      */

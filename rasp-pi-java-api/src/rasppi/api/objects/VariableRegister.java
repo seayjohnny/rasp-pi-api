@@ -1,10 +1,10 @@
-package raspipi.api.objects;
+package rasppi.api.objects;
 
-import raspipi.api.exceptions.DuplicateVariableId;
-import raspipi.api.exceptions.InvalidVariableId;
-import raspipi.api.requests.CreateVariableRequest;
-import raspipi.api.requests.GetVariableRequest;
-import raspipi.api.requests.RemoveVariableRequest;
+import rasppi.api.exceptions.DuplicateVariableId;
+import rasppi.api.exceptions.InvalidVariableId;
+import rasppi.api.requests.CreateVariableRequest;
+import rasppi.api.requests.GetVariableRequest;
+import rasppi.api.requests.RemoveVariableRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;

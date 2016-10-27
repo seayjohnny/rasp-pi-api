@@ -1,4 +1,4 @@
-package raspipi.api.requests;
+package rasppi.api.requests;
 
 import java.util.Map;
 

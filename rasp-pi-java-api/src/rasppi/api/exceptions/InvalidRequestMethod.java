@@ -1,4 +1,4 @@
-package raspipi.api.exceptions;
+package rasppi.api.exceptions;
 
 public class InvalidRequestMethod extends Exception{
     public InvalidRequestMethod(){ super(); }

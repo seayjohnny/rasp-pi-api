@@ -1,4 +1,4 @@
-package raspipi.api.exceptions;
+package rasppi.api.exceptions;
 
 public class DuplicateVariableId  extends Exception {
     public DuplicateVariableId(){ super(); }

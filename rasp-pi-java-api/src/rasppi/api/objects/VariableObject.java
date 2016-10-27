@@ -1,8 +1,7 @@
-package raspipi.api.objects;
+package rasppi.api.objects;
 
-import raspipi.api.requests.GetVariableRequest;
-import raspipi.api.requests.UpdateVariableRequest;
-import raspipi.api.requests.ViewVariableRequest;
+import rasppi.api.requests.UpdateVariableRequest;
+import rasppi.api.requests.ViewVariableRequest;
 
 import java.util.HashMap;
 import java.util.Map;
