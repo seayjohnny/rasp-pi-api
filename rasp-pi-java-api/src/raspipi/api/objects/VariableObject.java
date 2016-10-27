@@ -2,12 +2,14 @@ package raspipi.api.objects;
 
 import raspipi.api.requests.GetVariableRequest;
 import raspipi.api.requests.UpdateVariableRequest;
+import raspipi.api.requests.ViewVariableRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ *  VariableObject:
+ *      A class that represents a variable on the variable database.
  */
 public class VariableObject{
     private Integer Id;
@@ -70,27 +72,130 @@ public class VariableObject{
         this.setType(value.getClass().getSimpleName().toLowerCase());
     }
 
+    /**
+     *  assignId:
+     *      Makes a call to the VariableRegister to reserve an id on the variable database and assign it to this
+     *      variable.
+     */
     private void assignId(){
-        this.setId(Register.assignVariableId());
+        this.setId(Register.reserveVariable());
     }
 
+    /**
+     * viewRemoteValue:
+     *      Opens a ViewVariableRequest with only the id parameter to retrieve the variable's value currently stored on
+     *      the variable database.
+     *
+     * @return Object
+     */
     public Object viewRemoteValue(){
-        // opens a view variable request to get current value stored on database
-        Object value = null;
+        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
+
+        Object value = parseResponseBodyValue(request.getResponse().getBody());
         return value;
     }
 
+    /**
+     * refresh:
+     *      Opens a ViewVariableRequest with only the id parameter to restore this variable with the attributes stored
+     *      on the variable database.
+     *
+     *      Example:
+     *          We get a VariableObject from the variable database with the attributes
+     *          {id: 3, name: "var3", type: "integer", value: 12}. Within our code, we change the name and value of the
+     *          variable to "myVar" and "thisisvalue", respectively. Without using the update() method for our variable,
+     *          there are two versions of variable with id 3:
+     *          VariableDatabase - {id: 3, name: "var3", type: "integer", value: 12}
+     *          Our Code - {id: 3, name: "myVar", type: "string", value: "thisisvalue"}
+     *
+     *          refresh() will replace the attributes of our VariableObject with the attributes of the variable with the
+     *          same id found on the variable database. So then we have:
+     *          VariableDatabase - {id: 3, name: "var3", type: "integer", value: 12}
+     *          Our Code - {id: 3, name: "var3", type: "integer", value: 12}
+     *
+     */
     public void refresh(){
-        // opens a get variable request to restore variable to how it's stored on database
-        Map<String, String> params = new HashMap<>();
-        params.put("id", this.getId().toString());
-
-        GetVariableRequest request = new GetVariableRequest(params);
+        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
         request.execute();
 
         String name = request.getResponse().getBody().get("name").toString();
-        String type = request.getResponse().getBody().get("type").toString();
-        String s_value = request.getResponse().getBody().get("value").toString();
+        Object value = parseResponseBodyValue(request.getResponse().getBody());
+
+        this.setName(name);
+        this.setValue(value);
+    }
+
+    /**
+     * update:
+     *      Opens an UpdateVariableRequest to update the attributes of the variable on the variable database with the
+     *      current attributes of this VariableObject.
+     */
+    public void update(){
+        UpdateVariableRequest request = new UpdateVariableRequest(this.toParams("id, name, type, value"));
+        request.execute();
+    }
+
+    /**
+     *  remove:
+     *      Makes a call to the VariableRegister to remove this variable from the variable database, and then set the
+     *      id, name, and value of this VariableObject to 0, "", and 0, respectively.
+     */
+    public void remove(){
+        Register.removeVariable(this.Id);
+        this.setId(0);
+        this.setName("");
+        this.setValue(0);
+
+    }
+
+    /**
+     * load:
+     *      Makes a call to the VariableRegister to retrieve a variable already on the variable database and store it in
+     *      this VariableObject.
+     *
+     * @param id
+     */
+    public void load(Integer id){
+        Map<String, String> body = Register.retrieveVariable(id);
+
+        this.setId(Integer.valueOf(body.get("id")));
+        this.setName(body.get("name"));
+        this.setValue(parseResponseBodyValue(body));
+    }
+
+    /**
+     * toParams:
+     *      A helper method that puts the attributes of this VariableObject into a set of parameters.
+     * @return
+     */
+    private Map<String, String> toParams(String keys){
+        Map<String, String> params = new HashMap<>();
+        if(keys.contains("id")){
+            params.put("id", this.getId().toString());
+        }
+        if(keys.contains("name")){
+            params.put("name", this.getName());
+        }
+        if(keys.contains("type")){
+            params.put("type", this.getType());
+        }
+        if(keys.contains("value")){
+            params.put("type", this.getValue().toString());
+        }
+        return params;
+    }
+
+    /**
+     * parseResponseBodyValue:
+     *      A helper method that parses the value, based on type, found within a ResponseObject body.
+     *
+     * @param body
+     * @return Object
+     */
+    private Object parseResponseBodyValue(Map<String, String> body){
+        String type = body.get("type").toString();
+        String s_value = body.get("value").toString();
+
         Object value;
         switch(type){
             case "integer":
@@ -106,31 +211,7 @@ public class VariableObject{
             default:
                 value = s_value;
         }
-        this.setName(name);
-        this.setValue(value);
-    }
 
-    public void update(){
-        UpdateVariableRequest request = new UpdateVariableRequest(this.toParams());
-        request.execute();
-    }
-
-    public void remove(){
-        // asks VariableRegister to remove variable from database
-        Register.removeVariable(this.Id);
-        this.setId(0);
-        this.setName("");
-        this.setValue(0);
-
-    }
-
-    private Map<String, String> toParams(){
-        Map<String, String> params = new HashMap<>();
-        params.put("id", this.getId().toString());
-        params.put("name", this.getName());
-        params.put("type", this.getType());
-        params.put("value", this.getValue().toString());
-
-        return params;
+        return value;
     }
 }

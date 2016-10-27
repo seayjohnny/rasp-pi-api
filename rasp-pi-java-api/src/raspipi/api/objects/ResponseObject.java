@@ -8,10 +8,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * ResponseObject:
+ *      Class that represents the response from Request.
+ */
 public class ResponseObject {
     private Integer Status;
     private Map<String, String> Header;
-    private Map<String, Object> Body;
+    private Map<String, String> Body;
 
     public ResponseObject() {
         this.setStatus(0);
@@ -31,7 +35,7 @@ public class ResponseObject {
         this.setBody(null);
     }
 
-    public ResponseObject(Integer status, Map<String, String> header, Map<String, Object> body){
+    public ResponseObject(Integer status, Map<String, String> header, Map<String, String> body){
         this.setStatus(status);
         this.setHeader(header);
         this.setBody(body);
@@ -72,16 +76,23 @@ public class ResponseObject {
         Header = header;
     }
 
-    public Map<String, Object> getBody() {
+    public Map<String, String> getBody() {
         return Body;
     }
 
-    public void setBody(Map<String, Object> body) {
+    public void setBody(Map<String, String> body) {
         Body = body;
     }
 
-    private Map<String, Object> convertStreamToMap(java.io.InputStream is) {
-        Map<String, Object> map = new HashMap<>();
+    /**
+     * convertStreamtoMap:
+     *      A helper method that converts an InputStream to a Map<String, String> object.
+     *      
+     * @param is
+     * @return
+     */
+    private Map<String, String> convertStreamToMap(java.io.InputStream is) {
+        Map<String, String> map = new HashMap<>();
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 
         String string = s.hasNext() ? s.next() : "";
