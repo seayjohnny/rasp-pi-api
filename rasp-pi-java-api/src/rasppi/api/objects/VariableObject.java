@@ -15,10 +15,11 @@ public class VariableObject{
     private String Name;
     private String Type;
     private Object Value;
+    private String Null = "null";
     private static VariableRegister Register = VariableRegister.open();
 
     public VariableObject() {
-        this.assignId();
+        this.setId(null);
         this.setName(null);
         this.setValue(null);
         this.update();
@@ -51,6 +52,9 @@ public class VariableObject{
     }
 
     public void setName(String name) {
+        if(this.getId() == null){
+            this.assignId();
+        }
         Name = name;
     }
 
@@ -68,7 +72,11 @@ public class VariableObject{
 
     public void setValue(Object value) {
         Value = value;
-        this.setType(value.getClass().getSimpleName().toLowerCase());
+        if(value != null) {
+            this.setType(value.getClass().getSimpleName().toLowerCase());
+        } else{
+            this.setType(null);
+        }
     }
 
     /**
@@ -78,6 +86,7 @@ public class VariableObject{
      */
     private void assignId(){
         this.setId(Register.reserveVariable());
+        this.update();
     }
 
     /**
@@ -87,11 +96,15 @@ public class VariableObject{
      *
      * @return Object
      */
-    public Object viewRemoteValue(){
+    public Map<String, Object> viewRemote(){
         ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-
-        Object value = parseResponseBodyValue(request.getResponse().getBody());
-        return value;
+        Map<String, String> body = request.getResponse().getBody();
+        Map<String, Object> remote = new HashMap<>();
+        remote.put("id", Integer.valueOf(body.get("id")));
+        remote.put("name", body.get("name"));
+        remote.put("type", body.get("id"));
+        remote.put("value", this.parseResponseBodyValue(body));
+        return remote;
     }
 
     /**
@@ -141,9 +154,9 @@ public class VariableObject{
      */
     public void remove(){
         Register.removeVariable(this.Id);
-        this.setId(0);
-        this.setName("");
-        this.setValue(0);
+        this.setId(null);
+        this.setName(null);
+        this.setValue(null);
 
     }
 
@@ -170,16 +183,32 @@ public class VariableObject{
     private Map<String, String> toParams(String keys){
         Map<String, String> params = new HashMap<>();
         if(keys.contains("id")){
-            params.put("id", this.getId().toString());
+            if(this.getId() != null){
+                params.put("id", this.getId().toString());
+            } else {
+                params.put("id", Null);
+            }
         }
         if(keys.contains("name")){
-            params.put("name", this.getName());
+            if(this.getName() != null){
+                params.put("name", this.getName());
+            } else {
+                params.put("name", Null);
+            }
         }
         if(keys.contains("type")){
-            params.put("type", this.getType());
+            if(this.getType() != null){
+                params.put("type", this.getType());
+            } else {
+                params.put("type", Null);
+            }
         }
         if(keys.contains("value")){
-            params.put("type", this.getValue().toString());
+            if(this.getValue() != null){
+                params.put("value", this.getValue().toString());
+            } else {
+                params.put("value", Null);
+            }
         }
         return params;
     }
