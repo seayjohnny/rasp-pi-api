@@ -1,12 +1,14 @@
 package rasppi.api.objects;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponse;
 
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * ResponseObject:
@@ -15,7 +17,8 @@ import java.util.Map;
 public class ResponseObject {
     private Integer Status;
     private Map<String, String> Header;
-    private Map<String, String> Body;
+    private Map<String, Object> Body;
+    private ObjectMapper Mapper = new ObjectMapper();
 
     public ResponseObject() {
         this.setStatus(0);
@@ -35,7 +38,7 @@ public class ResponseObject {
         this.setBody(null);
     }
 
-    public ResponseObject(Integer status, Map<String, String> header, Map<String, String> body){
+    public ResponseObject(Integer status, Map<String, String> header, Map<String, Object> body){
         this.setStatus(status);
         this.setHeader(header);
         this.setBody(body);
@@ -54,7 +57,8 @@ public class ResponseObject {
         this.setHeader(header);
 
         try {
-            this.setBody(convertStreamToMap(response.getContent()));
+            this.setBody(Mapper.readValue(response.getContent(), Map.class));
+            System.out.println(this.getBody().toString());
         } catch (IOException e) {
             System.err.println(e.getMessage().toString());
         }
@@ -76,14 +80,18 @@ public class ResponseObject {
         Header = header;
     }
 
-    public Map<String, String> getBody() {
+    public Map<String, Object> getBody() {
         return Body;
     }
 
-    public void setBody(Map<String, String> body) {
+    public void setBody(Map<String, Object> body) {
         Body = body;
     }
 
+    public Map<String, Object> getBodyData(){
+        Map<String, Object> content = (Map<String, Object>)Body.get("content");
+        return (Map<String, Object>)content.get("data");
+    }
     /**
      * convertStreamtoMap:
      *      A helper method that converts an InputStream to a Map<String, String> object.
@@ -91,7 +99,7 @@ public class ResponseObject {
      * @param is
      * @return
      */
-    private Map<String, String> convertStreamToMap(java.io.InputStream is) {
+    private Map<String, String> convertStreamToMap(InputStream is) {
         Map<String, String> map = new HashMap<>();
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 
@@ -110,4 +118,5 @@ public class ResponseObject {
         }
         return map;
     }
+
 }

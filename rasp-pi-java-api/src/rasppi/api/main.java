@@ -11,7 +11,5 @@ public class main {
         System.out.println(s);
     }
     public static void main(String[] args){
-
-
     }
 }

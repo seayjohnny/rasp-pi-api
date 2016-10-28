@@ -16,6 +16,7 @@ public class VariableObject{
     private String Name = "null";
     private String Type;
     private Object Value;
+    private Integer Protection = 0;
 
     private static VariableRegister Register = VariableRegister.open();
 
@@ -78,6 +79,7 @@ public class VariableObject{
         }
     }
 
+    public Integer getProtection(){ return Protection;}
     /**
      *  assignId:
      *      Makes a call to the VariableRegister to reserve an id on the variable database and assign it to this
@@ -96,12 +98,13 @@ public class VariableObject{
      */
     public Map<String, Object> viewRemote(){
         ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-        Map<String, String> body = request.getResponse().getBody();
+        Map<String, Object> data = request.getResponse().getBodyData();
         Map<String, Object> remote = new HashMap<>();
-        remote.put("id", Integer.valueOf(body.get("id")));
-        remote.put("name", body.get("name"));
-        remote.put("type", body.get("type"));
-        remote.put("value", this.parseResponseBodyValue(body));
+        remote.put("id", data.get("id"));
+        remote.put("name", data.get("name"));
+        remote.put("type", data.get("type"));
+        remote.put("value", data.get("value"));
+        remote.put("protected", data.get("protected"));
         return remote;
     }
 
@@ -129,7 +132,7 @@ public class VariableObject{
         request.execute();
 
         String name = request.getResponse().getBody().get("name").toString();
-        Object value = parseResponseBodyValue(request.getResponse().getBody());
+        Object value = request.getResponse().getBodyData().get("value");
 
         this.setName(name);
         this.setValue(value);
@@ -141,13 +144,12 @@ public class VariableObject{
      *      current attributes of this VariableObject.
      */
     public void update(){
-        Map<String, Object> params = new HashMap<>();
-        params.put("id", this.getId());
-        params.put("name", this.getName());
-        params.put("type", this.getType());
-        params.put("value", this.getValue());
-        UpdateVariableRequest request = new UpdateVariableRequest(params);
-        request.execute();
+        if(Protection < 2) {
+            UpdateVariableRequest request = new UpdateVariableRequest(toParams("id, name, type, value"));
+            request.execute();
+        } else {
+            // attempting to write to protected variable
+        }
     }
 
     /**
@@ -156,11 +158,14 @@ public class VariableObject{
      *      id, name, and value of this VariableObject to 0, "", and 0, respectively.
      */
     public void remove(){
-        Register.removeVariable(this.getId());
-        this.setId(-1);
-        this.setName(Null);
-        this.setValue(Null);
-
+        if(Register.removeVariable(this.getId())){
+            this.setId(-1);
+            this.setName(Null);
+            this.setValue(Null);
+            Protection = 0;
+        } else {
+            // attempting to remove protected variable
+        }
     }
 
     /**
@@ -171,11 +176,14 @@ public class VariableObject{
      * @param id
      */
     public void load(Integer id){
-        Map<String, String> body = Register.retrieveVariable(id);
-
-        this.setId(Integer.parseInt(body.get("id")));
-        this.setName(body.get("name"));
-        this.setValue(parseResponseBodyValue(body));
+        Map<String, Object> data = Register.retrieveVariable(id);
+        if((Integer) data.get("protection") < 3) {
+            this.setId((Integer) data.get("id"));
+            this.setName((String) data.get("name"));
+            this.setValue(data.get("value"));
+        } else {
+            // attempting to load inaccessible variable
+        }
     }
 
     /**
