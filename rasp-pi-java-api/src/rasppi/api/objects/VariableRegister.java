@@ -79,15 +79,16 @@ public class VariableRegister {
      * @return Integer
      */
     public Integer reserveVariable(){
-        Map<String, String> emptyParams = new HashMap<>();
+        Integer id;
+
+        Map<String, Object> emptyParams = new HashMap<>();
         emptyParams.put("name", "TEMP");
         emptyParams.put("type", "TEMP");
         emptyParams.put("value", "TEMP");
 
         CreateVariableRequest request = new CreateVariableRequest(emptyParams);
         request.execute();
-
-        Integer id = Integer.valueOf(request.getResponse().getBody().get("id"));
+        id = Integer.parseInt(request.getResponse().getBody().get("id"));
         this.addVariableId(id);
 
         return id;
@@ -103,7 +104,7 @@ public class VariableRegister {
     public Map<String, String> retrieveVariable(Integer id){
         GetVariableRequest request = new GetVariableRequest(this.idToParams(id));
         request.execute();
-
+        this.addVariableId(id);
         return request.getResponse().getBody();
     }
 
@@ -121,9 +122,9 @@ public class VariableRegister {
         this.removeVariableId(id);
     }
 
-    private Map<String, String> idToParams(Integer id){
-        Map<String, String> params = new HashMap<>();
-        params.put("id", id.toString());
+    private Map<String, Object> idToParams(Integer id){
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
 
         return params;
     }

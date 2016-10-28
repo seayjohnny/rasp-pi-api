@@ -14,7 +14,7 @@ public class GenericRequest {
 
     private String Url;
     private String Method;
-    private Map<String, String> Params;
+    private Map<String, Object> Params;
     private ResponseObject Response;
 
     static final HttpTransport  HTTP_TRANSPORT = new NetHttpTransport();
@@ -29,7 +29,7 @@ public class GenericRequest {
         this.setParams(null);
     }
 
-    public GenericRequest(String url, String method, Map<String, String> params) {
+    public GenericRequest(String url, String method, Map<String, Object> params) {
         this.setUrl(url);
         this.setMethod(method);
         this.setParams(params);
@@ -51,11 +51,11 @@ public class GenericRequest {
         Method = method;
     }
 
-    public Map<String, String> getParams() {
+    public Map<String, Object> getParams() {
         return Params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public void setParams(Map<String, Object> params) {
         Params = params;
     }
 

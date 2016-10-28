@@ -101,10 +101,13 @@ public class ResponseObject {
         for(int i=0;i<pairs.length;i++){
             String pair = pairs[i];
             String[] keyValue = pair.split(":");
-            String key = keyValue[0].substring(1, keyValue[0].lastIndexOf('"'));
-            map.put(key, keyValue[1]);
+            String key = keyValue[0].substring(1, keyValue[0].length() - 1);
+            String value = keyValue[1];
+            if( value.charAt(0) == '"'){
+                value = value.substring(1, value.length() - 1);
+            }
+            map.put(key, value);
         }
-
         return map;
     }
 }
