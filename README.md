@@ -15,7 +15,7 @@ rasp-pi-api is a collection of basic APIs (written in various lanquages) that al
 ### Current Features 
 ---
 ##### RaspPi Java API
-- Access and manipulate variables stored in an SQL database hosted on the Raspberry Pi.
+- Access and manipulate variables stored in an SQL database hosted on the Raspberry Pi (Local Network Only).
 
 ### How To Use
 ---
@@ -32,3 +32,4 @@ rasp-pi-api is a collection of basic APIs (written in various lanquages) that al
 ##### RaspPi Java API
 - Run Python scripts stored on Raspberry Pi and retrieve the results.
 - Access and manipulate various attachments connected to the Raspberry Pi.
+- Bluetooth Integration
