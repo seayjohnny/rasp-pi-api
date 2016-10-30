@@ -32,3 +32,4 @@ rasp-pi-api is a collection of basic APIs (written in various lanquages) that al
 ##### RaspPi Java API
 - Run Python scripts stored on Raspberry Pi and retrieve the results.
 - Access and manipulate various attachments connected to the Raspberry Pi.
+- Bluetooth integration.
