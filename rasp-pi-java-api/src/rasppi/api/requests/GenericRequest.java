@@ -93,5 +93,4 @@ public class GenericRequest {
     private void setResponse(ResponseObject response){
         Response = response;
     }
-
 }

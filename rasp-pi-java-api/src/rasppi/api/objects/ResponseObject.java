@@ -58,7 +58,6 @@ public class ResponseObject {
 
         try {
             this.setBody(Mapper.readValue(response.getContent(), Map.class));
-            System.out.println(this.getBody().toString());
         } catch (IOException e) {
             System.err.println(e.getMessage().toString());
         }
@@ -92,6 +91,7 @@ public class ResponseObject {
         Map<String, Object> content = (Map<String, Object>)Body.get("content");
         return (Map<String, Object>)content.get("data");
     }
+
     /**
      * convertStreamtoMap:
      *      A helper method that converts an InputStream to a Map<String, String> object.

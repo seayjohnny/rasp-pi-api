@@ -12,6 +12,6 @@ public class RemoveVariableRequest extends GenericRequest{
      *      Only valid parameter is "id".
      */
     public RemoveVariableRequest(Map<String, Object> params){
-        super("http://192.168.0.2/db_remove.php", "post", params);
+        super("http://192.168.0.2/remove.php", "post", params);
     }
 }

@@ -4,7 +4,7 @@ $response = array();
 $content = array();
 $data = array();
 
-$id = intval($_POST["id"]);
+$id = $_POST["id"];
 
 // include databse credentials
 require_once  __DIR__.'/db_config.php';
@@ -44,7 +44,7 @@ if (mysql_num_rows($result) > 0) {
 		$response["message"] = "Attempted to retrieve inaccessible variable";
 		$response["content"] = $content;
 		echo json_encode($response);
-	]
+	}
 } else {
 	// no variables found
 	$content["type"] = "variable";

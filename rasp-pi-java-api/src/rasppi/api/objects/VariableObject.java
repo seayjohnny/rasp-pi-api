@@ -1,5 +1,6 @@
 package rasppi.api.objects;
 
+import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.UpdateVariableRequest;
 import rasppi.api.requests.ViewVariableRequest;
 
@@ -79,14 +80,15 @@ public class VariableObject{
         }
     }
 
-    public Integer getProtection(){ return Protection;}
+    public Integer getProtection() { return Protection;}
+
     /**
      *  assignId:
      *      Makes a call to the VariableRegister to reserve an id on the variable database and assign it to this
      *      variable.
      */
     private void assignId(){
-        this.setId(Register.reserveVariable());
+         this.setId(Register.reserveVariable());
     }
 
     /**
@@ -97,15 +99,20 @@ public class VariableObject{
      * @return Object
      */
     public Map<String, Object> viewRemote(){
-        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-        Map<String, Object> data = request.getResponse().getBodyData();
-        Map<String, Object> remote = new HashMap<>();
-        remote.put("id", data.get("id"));
-        remote.put("name", data.get("name"));
-        remote.put("type", data.get("type"));
-        remote.put("value", data.get("value"));
-        remote.put("protected", data.get("protected"));
-        return remote;
+        if(DummyPi.exists()){
+            return DummyPi.loadVariable(this.getId());
+        } else {
+            GetVariableRequest request = new GetVariableRequest(this.toParams("id"));
+            request.execute();
+            Map<String, Object> data = request.getResponse().getBodyData();
+            Map<String, Object> remote = new HashMap<>();
+            remote.put("id", data.get("id"));
+            remote.put("name", data.get("name"));
+            remote.put("type", data.get("type"));
+            remote.put("value", data.get("value"));
+            remote.put("protected", data.get("protected"));
+            return remote;
+        }
     }
 
     /**
@@ -128,14 +135,20 @@ public class VariableObject{
      *
      */
     public void refresh(){
-        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-        request.execute();
+        if(DummyPi.exists()){
+            Map<String, Object> remote = DummyPi.loadVariable(this.getId());
+            this.setName((String)remote.get("name"));
+            this.setValue(remote.get("value"));
+        } else {
+            ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
+            request.execute();
 
-        String name = request.getResponse().getBody().get("name").toString();
-        Object value = request.getResponse().getBodyData().get("value");
+            String name = request.getResponse().getBody().get("name").toString();
+            Object value = request.getResponse().getBodyData().get("value");
 
-        this.setName(name);
-        this.setValue(value);
+            this.setName(name);
+            this.setValue(value);
+        }
     }
 
     /**
@@ -145,8 +158,12 @@ public class VariableObject{
      */
     public void update(){
         if(Protection < 2) {
-            UpdateVariableRequest request = new UpdateVariableRequest(toParams("id, name, type, value"));
-            request.execute();
+            if(DummyPi.exists()){
+                DummyPi.updateVariable(this);
+            } else {
+                UpdateVariableRequest request = new UpdateVariableRequest(toParams("id, name, type, value"));
+                request.execute();
+            }
         } else {
             // attempting to write to protected variable
         }
@@ -224,33 +241,9 @@ public class VariableObject{
         return params;
     }
 
-    /**
-     * parseResponseBodyValue:
-     *      A helper method that parses the value, based on type, found within a ResponseObject body.
-     *
-     * @param body
-     * @return Object
-     */
-    private Object parseResponseBodyValue(Map<String, String> body){
-        String type = body.get("type").toString();
-        String s_value = body.get("value").toString();
-
-        Object value;
-        switch(type){
-            case "integer":
-                value = Integer.valueOf(s_value);
-                break;
-            case "float":
-                value = Float.valueOf(s_value);
-                break;
-            case "boolean":
-                value = Boolean.valueOf(s_value);
-                break;
-            case "string":
-            default:
-                value = s_value;
-        }
-
-        return value;
+    @Override
+    public String toString(){
+        return String.format("id: %d, name: %s, type: %s, value: %s, protection: %d", this.getId(), this.getName(),
+                this.getType(), this.getValue().toString(), this.getProtection());
     }
 }

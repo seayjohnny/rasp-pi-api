@@ -21,6 +21,6 @@ public class ViewVariableRequest extends GenericRequest{
      *      Name, type, and value parameters can be used in conjunction to filter out specific variables.
      */
     public ViewVariableRequest(Map<String, Object> params){
-        super("http://192.168.0.2/db_view.php", "post", params);
+        super("http://192.168.0.2/view.php", "post", params);
     }
 }
