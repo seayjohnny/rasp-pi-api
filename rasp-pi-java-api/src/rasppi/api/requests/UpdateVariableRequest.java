@@ -11,7 +11,7 @@ public class UpdateVariableRequest extends GenericRequest{
      *
      * @param params
      */
-    public UpdateVariableRequest(Map<String, String> params){
-        super("http//:192.168.0.2/db_update.php", "post", params);
+    public UpdateVariableRequest(Map<String, Object> params){
+        super("http://192.168.0.2/update.php", "post", params);
     }
 }

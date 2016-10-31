@@ -1,0 +1,1 @@
+Place these scripts inside /var/www/html and make sure they can be accessed by others.

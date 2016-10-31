@@ -11,7 +11,7 @@ public class CreateVariableRequest extends GenericRequest{
      *
      * @param params
      */
-    public CreateVariableRequest(Map<String, String> params){
-        super("http//:192.168.0.2/db_create.php", "post", params);
+    public CreateVariableRequest(Map<String, Object> params){
+        super("http://192.168.0.2/create.php", "post", params);
     }
 }

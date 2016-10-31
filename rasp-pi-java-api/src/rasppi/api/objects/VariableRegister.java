@@ -2,6 +2,7 @@ package rasppi.api.objects;
 
 import rasppi.api.exceptions.DuplicateVariableId;
 import rasppi.api.exceptions.InvalidVariableId;
+import rasppi.api.exceptions.ProtectedVariableException;
 import rasppi.api.requests.CreateVariableRequest;
 import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.RemoveVariableRequest;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 /**
  *  VariableRegister:
@@ -41,15 +43,14 @@ public class VariableRegister {
      *
      * @param id
      */
-    private void addVariableId(Integer id){
-        try{
-            if(!this.IdStack.contains(id)) {
-                this.IdStack.add(id);
-            } else {
-                throw new DuplicateVariableId();
-            }
-        } catch(DuplicateVariableId e) {
-            System.err.println(e.getMessage().toString());
+    private Boolean addVariableId(Integer id){
+        if(id == -1){
+            return false;
+        } else if(!this.IdStack.contains(id)) {
+            this.IdStack.add(id);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -59,15 +60,12 @@ public class VariableRegister {
      *
      * @param id
      */
-    private void removeVariableId(Integer id){
-        try{
-            if(this.IdStack.contains(id)) {
-                this.IdStack.remove(id);
-            } else {
-                throw new InvalidVariableId();
-            }
-        } catch(InvalidVariableId e){
-            System.err.println(e.getMessage().toString());
+    private Boolean removeVariableId(Integer id){
+        if(this.IdStack.contains(id)) {
+            this.IdStack.remove(id);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -79,32 +77,54 @@ public class VariableRegister {
      * @return Integer
      */
     public Integer reserveVariable(){
-        Map<String, String> emptyParams = new HashMap<>();
-        emptyParams.put("name", "TEMP");
-        emptyParams.put("type", "TEMP");
-        emptyParams.put("value", "TEMP");
+        if(DummyPi.exists()){
+            return DummyPi.createVariable();
+        } else {
+            Integer id;
 
-        CreateVariableRequest request = new CreateVariableRequest(emptyParams);
-        request.execute();
+            Map<String, Object> emptyParams = new HashMap<>();
+            emptyParams.put("name", "TEMP");
+            emptyParams.put("type", "TEMP");
+            emptyParams.put("value", "TEMP");
+            emptyParams.put("protected", 0);
 
-        Integer id = Integer.valueOf(request.getResponse().getBody().get("id"));
-        this.addVariableId(id);
+            CreateVariableRequest request = new CreateVariableRequest(emptyParams);
+            request.execute();
+            id = (Integer) request.getResponse().getBodyData().get("id");
+            addVariableId(id);
 
-        return id;
+            return id;
+        }
     }
 
     /**
-     * retrievVariable:
+     * retrieveVariable:
      *      Opens a GetVariableRequest to retrieve a variable from the database and returns its attributes.
      *
      * @param id
      * @return Map<String, String>
      */
-    public Map<String, String> retrieveVariable(Integer id){
-        GetVariableRequest request = new GetVariableRequest(this.idToParams(id));
-        request.execute();
+    public Map<String, Object> retrieveVariable(Integer id){
+        if(DummyPi.exists()){
+            Map<String, Object> var = DummyPi.loadVariable(id);
+            if(var != null){
+                this.addVariableId(id);
+                return var;
+            }
+        } else {
+            GetVariableRequest request = new GetVariableRequest(this.idToParams(id));
+            request.execute();
+            try {
+                if (addVariableId((Integer) request.getResponse().getBodyData().get("id"))) {
+                    return request.getResponse().getBodyData();
+                } else {
+                    throw new ProtectedVariableException();
+                }
+            } catch (ProtectedVariableException e) {
 
-        return request.getResponse().getBody();
+            }
+        }
+        return null;
     }
 
     /**
@@ -114,16 +134,26 @@ public class VariableRegister {
      *
      * @param id
      */
-    public void removeVariable(Integer id){
-        RemoveVariableRequest request = new RemoveVariableRequest(this.idToParams(id));
-        request.execute();
+    public Boolean removeVariable(Integer id){
+        if(DummyPi.exists()){
+            DummyPi.removeVariable(id);
+            return true;
+        } else {
+            RemoveVariableRequest request = new RemoveVariableRequest(this.idToParams(id));
+            request.execute();
+            if ((Integer) request.getResponse().getBody().get("success") == 1) {
+                this.removeVariableId(id);
+                return true;
+            } else {
+                return false;
+            }
+        }
 
-        this.removeVariableId(id);
     }
 
-    private Map<String, String> idToParams(Integer id){
-        Map<String, String> params = new HashMap<>();
-        params.put("id", id.toString());
+    private Map<String, Object> idToParams(Integer id){
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
 
         return params;
     }

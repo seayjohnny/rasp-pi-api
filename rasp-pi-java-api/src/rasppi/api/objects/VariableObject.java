@@ -1,5 +1,6 @@
 package rasppi.api.objects;
 
+import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.UpdateVariableRequest;
 import rasppi.api.requests.ViewVariableRequest;
 
@@ -11,24 +12,24 @@ import java.util.Map;
  *      A class that represents a variable on the variable database.
  */
 public class VariableObject{
+    private String Null = "null";
     private Integer Id;
-    private String Name;
+    private String Name = "null";
     private String Type;
     private Object Value;
-    private String Null = "null";
+    private Integer Protection = 0;
+
     private static VariableRegister Register = VariableRegister.open();
 
     public VariableObject() {
-        this.setId(null);
-        this.setName(null);
-        this.setValue(null);
-        this.update();
+        this.setId(-2);
+        this.setValue(Null);
     }
 
     public VariableObject(String name) {
         this.assignId();
         this.setName(name);
-        this.setValue(null);
+        this.setValue(Null);
         this.update();
     }
 
@@ -52,7 +53,7 @@ public class VariableObject{
     }
 
     public void setName(String name) {
-        if(this.getId() == null){
+        if(this.getId() == -2){
             this.assignId();
         }
         Name = name;
@@ -72,12 +73,14 @@ public class VariableObject{
 
     public void setValue(Object value) {
         Value = value;
-        if(value != null) {
+        if(value != Null) {
             this.setType(value.getClass().getSimpleName().toLowerCase());
         } else{
-            this.setType(null);
+            this.setType(Null);
         }
     }
+
+    public Integer getProtection() { return Protection;}
 
     /**
      *  assignId:
@@ -85,8 +88,7 @@ public class VariableObject{
      *      variable.
      */
     private void assignId(){
-        this.setId(Register.reserveVariable());
-        this.update();
+         this.setId(Register.reserveVariable());
     }
 
     /**
@@ -97,14 +99,20 @@ public class VariableObject{
      * @return Object
      */
     public Map<String, Object> viewRemote(){
-        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-        Map<String, String> body = request.getResponse().getBody();
-        Map<String, Object> remote = new HashMap<>();
-        remote.put("id", Integer.valueOf(body.get("id")));
-        remote.put("name", body.get("name"));
-        remote.put("type", body.get("id"));
-        remote.put("value", this.parseResponseBodyValue(body));
-        return remote;
+        if(DummyPi.exists()){
+            return DummyPi.loadVariable(this.getId());
+        } else {
+            GetVariableRequest request = new GetVariableRequest(this.toParams("id"));
+            request.execute();
+            Map<String, Object> data = request.getResponse().getBodyData();
+            Map<String, Object> remote = new HashMap<>();
+            remote.put("id", data.get("id"));
+            remote.put("name", data.get("name"));
+            remote.put("type", data.get("type"));
+            remote.put("value", data.get("value"));
+            remote.put("protected", data.get("protected"));
+            return remote;
+        }
     }
 
     /**
@@ -127,14 +135,20 @@ public class VariableObject{
      *
      */
     public void refresh(){
-        ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
-        request.execute();
+        if(DummyPi.exists()){
+            Map<String, Object> remote = DummyPi.loadVariable(this.getId());
+            this.setName((String)remote.get("name"));
+            this.setValue(remote.get("value"));
+        } else {
+            ViewVariableRequest request = new ViewVariableRequest(this.toParams("id"));
+            request.execute();
 
-        String name = request.getResponse().getBody().get("name").toString();
-        Object value = parseResponseBodyValue(request.getResponse().getBody());
+            String name = request.getResponse().getBody().get("name").toString();
+            Object value = request.getResponse().getBodyData().get("value");
 
-        this.setName(name);
-        this.setValue(value);
+            this.setName(name);
+            this.setValue(value);
+        }
     }
 
     /**
@@ -143,8 +157,16 @@ public class VariableObject{
      *      current attributes of this VariableObject.
      */
     public void update(){
-        UpdateVariableRequest request = new UpdateVariableRequest(this.toParams("id, name, type, value"));
-        request.execute();
+        if(Protection < 2) {
+            if(DummyPi.exists()){
+                DummyPi.updateVariable(this);
+            } else {
+                UpdateVariableRequest request = new UpdateVariableRequest(toParams("id, name, type, value"));
+                request.execute();
+            }
+        } else {
+            // attempting to write to protected variable
+        }
     }
 
     /**
@@ -153,11 +175,14 @@ public class VariableObject{
      *      id, name, and value of this VariableObject to 0, "", and 0, respectively.
      */
     public void remove(){
-        Register.removeVariable(this.Id);
-        this.setId(null);
-        this.setName(null);
-        this.setValue(null);
-
+        if(Register.removeVariable(this.getId())){
+            this.setId(-1);
+            this.setName(Null);
+            this.setValue(Null);
+            Protection = 0;
+        } else {
+            // attempting to remove protected variable
+        }
     }
 
     /**
@@ -168,11 +193,14 @@ public class VariableObject{
      * @param id
      */
     public void load(Integer id){
-        Map<String, String> body = Register.retrieveVariable(id);
-
-        this.setId(Integer.valueOf(body.get("id")));
-        this.setName(body.get("name"));
-        this.setValue(parseResponseBodyValue(body));
+        Map<String, Object> data = Register.retrieveVariable(id);
+        if((Integer) data.get("protection") < 3) {
+            this.setId((Integer) data.get("id"));
+            this.setName((String) data.get("name"));
+            this.setValue(data.get("value"));
+        } else {
+            // attempting to load inaccessible variable
+        }
     }
 
     /**
@@ -180,32 +208,32 @@ public class VariableObject{
      *      A helper method that puts the attributes of this VariableObject into a set of parameters.
      * @return
      */
-    private Map<String, String> toParams(String keys){
-        Map<String, String> params = new HashMap<>();
+    private Map<String, Object> toParams(String keys){
+        Map<String, Object> params = new HashMap<>();
         if(keys.contains("id")){
-            if(this.getId() != null){
-                params.put("id", this.getId().toString());
+            if(this.getId() != -1){
+                params.put("id", this.getId());
             } else {
                 params.put("id", Null);
             }
         }
         if(keys.contains("name")){
-            if(this.getName() != null){
+            if(this.getName() != Null){
                 params.put("name", this.getName());
             } else {
                 params.put("name", Null);
             }
         }
         if(keys.contains("type")){
-            if(this.getType() != null){
+            if(this.getType() != Null){
                 params.put("type", this.getType());
             } else {
                 params.put("type", Null);
             }
         }
         if(keys.contains("value")){
-            if(this.getValue() != null){
-                params.put("value", this.getValue().toString());
+            if(this.getValue() != Null){
+                params.put("value", this.getValue());
             } else {
                 params.put("value", Null);
             }
@@ -213,33 +241,9 @@ public class VariableObject{
         return params;
     }
 
-    /**
-     * parseResponseBodyValue:
-     *      A helper method that parses the value, based on type, found within a ResponseObject body.
-     *
-     * @param body
-     * @return Object
-     */
-    private Object parseResponseBodyValue(Map<String, String> body){
-        String type = body.get("type").toString();
-        String s_value = body.get("value").toString();
-
-        Object value;
-        switch(type){
-            case "integer":
-                value = Integer.valueOf(s_value);
-                break;
-            case "float":
-                value = Float.valueOf(s_value);
-                break;
-            case "boolean":
-                value = Boolean.valueOf(s_value);
-                break;
-            case "string":
-            default:
-                value = s_value;
-        }
-
-        return value;
+    @Override
+    public String toString(){
+        return String.format("id: %d, name: %s, type: %s, value: %s, protection: %d", this.getId(), this.getName(),
+                this.getType(), this.getValue().toString(), this.getProtection());
     }
 }
