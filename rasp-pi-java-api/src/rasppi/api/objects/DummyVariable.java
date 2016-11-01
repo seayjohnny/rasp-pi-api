@@ -27,7 +27,7 @@ public class DummyVariable {
      * @return
      */
     public String toMDTable(){
-        return "| "+this.ID.toString()+" | "+this.NAME.toString()+" |  "+this.TYPE.toString()+" |  "+this.VALUE.toString()+
-                " |  "+this.PROTECTION.toString()+" | ";
+        return "| "+this.ID.toString()+" \t| "+this.NAME.toString()+"\t| "+this.TYPE.toString()+"\t| "+
+                this.VALUE.toString()+"\t| "+this.PROTECTION.toString()+"\t| ";
     }
 }
