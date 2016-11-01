@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/rasp-pi-java-api.iml" filepath="$PROJECT_DIR$/rasp-pi-java-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rasp-pi-java-api.iml" filepath="$PROJECT_DIR$/.idea/modules/rasp-pi-java-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rasp-pi-java-api_main.iml" filepath="$PROJECT_DIR$/.idea/modules/rasp-pi-java-api_main.iml" group="rasp-pi-java-api" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rasp-pi-java-api_test.iml" filepath="$PROJECT_DIR$/.idea/modules/rasp-pi-java-api_test.iml" group="rasp-pi-java-api" />
     </modules>
   </component>
 </project>
