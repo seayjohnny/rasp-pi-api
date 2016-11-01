@@ -3,7 +3,7 @@
 
 ### Overview
 ---
-rasp-pi-api is a collection of basic APIs (written in various lanquages) that allow a software developer to  interact with a Raspberry Pi. The overriding goal of this project is to have a set of basic tools that will increase usabilty, effeciency, and scalabilty when developing software that will be interacting with a Raspberry Pi. 
+rasp-pi-api is a collection of basic APIs (written in various languages) that allow a software developer to  interact with a Raspberry Pi. The overriding goal of this project is to have a set of basic tools that will increase usabilty, effeciency, and scalabilty when developing software that will be interacting with a Raspberry Pi. 
 - **Current Languages**
     * *Java*
 - **Planned Languages**
