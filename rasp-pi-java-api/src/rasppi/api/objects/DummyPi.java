@@ -85,7 +85,8 @@ public class DummyPi {
         vars.put(39, new DummyVariable(39, "backLeftWindowLevel", "integer", 255, 1));
         vars.put(40, new DummyVariable(40, "backRightWindowLevel", "integer", 255, 1));
         for (int i = 41; i <= 100; i++) {
-            DummyVariable var = new DummyVariable(i, String.format("reserved%d", i), "null", "null", 1);
+            DummyVariable var = new DummyVariable(i, String.format("reserved%d", i), "null",
+                    "null", 1);
             vars.put(i, var);
         }
     }
@@ -104,6 +105,7 @@ public class DummyPi {
                 return i;
             }
         }
+
         return null;
     }
 
@@ -114,10 +116,9 @@ public class DummyPi {
      */
     public static void updateVariable(VariableObject var){
         if(var.getProtection() < 1){
-            vars.put(var.getId(), new DummyVariable(var.getId(), var.getName(), var.getType(), var.getValue(),
-                    var.getProtection()));
+            vars.put(var.getId(), new DummyVariable(var.getId(), var.getName(), var.getType(),
+                    var.getValue(),var.getProtection()));
         }
-
     }
 
     /**
@@ -150,7 +151,6 @@ public class DummyPi {
         } else {
             return null;
         }
-
     }
 
 }

@@ -148,7 +148,6 @@ public class VariableRegister {
                 return false;
             }
         }
-
     }
 
     private Map<String, Object> idToParams(Integer id){
