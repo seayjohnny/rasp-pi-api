@@ -1,5 +1,6 @@
 package rasppi.api.objects;
 
+import rasppi.api.objects.dummypi.DummyPi;
 import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.UpdateVariableRequest;
 import rasppi.api.requests.ViewVariableRequest;

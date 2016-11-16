@@ -1,8 +1,7 @@
 package rasppi.api.objects;
 
-import rasppi.api.exceptions.DuplicateVariableId;
-import rasppi.api.exceptions.InvalidVariableId;
 import rasppi.api.exceptions.ProtectedVariableException;
+import rasppi.api.objects.dummypi.DummyPi;
 import rasppi.api.requests.CreateVariableRequest;
 import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.RemoveVariableRequest;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 /**
  *  VariableRegister:

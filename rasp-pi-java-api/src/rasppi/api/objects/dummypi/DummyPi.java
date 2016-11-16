@@ -1,4 +1,6 @@
-package rasppi.api.objects;
+package rasppi.api.objects.dummypi;
+
+import rasppi.api.objects.VariableObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,9 +65,9 @@ public class DummyPi {
         vars.put(17, new DummyVariable(17, "engineRunning", "boolean", false, 2));
         vars.put(18, new DummyVariable(18, "speed", "integer", 55, 2));
         vars.put(19, new DummyVariable(19, "frontLeftTirePSI", "integer", 30, 2));
-        vars.put(20, new DummyVariable(20, "frontRightTirePSI", "integer", 30, 2));
-        vars.put(21, new DummyVariable(21, "backLeftTirePSI", "integer", 30, 2));
-        vars.put(22, new DummyVariable(22, "backRightTirePSI", "integer", 30, 2));
+        vars.put(20, new DummyVariable(20, "frontRightTirePSI", "integer", 31, 2));
+        vars.put(21, new DummyVariable(21, "backLeftTirePSI", "integer", 32, 2));
+        vars.put(22, new DummyVariable(22, "backRightTirePSI", "integer", 33, 2));
         vars.put(23, new DummyVariable(23, "oilFluidLevel", "integer", 255, 2));
         vars.put(24, new DummyVariable(24, "coolantFluidLevel", "integer", 255, 2));
         vars.put(25, new DummyVariable(25, "powerSteeringFluidLevel", "integer", 255, 2));

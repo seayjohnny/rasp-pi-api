@@ -1,4 +1,4 @@
-package rasppi.api.objects;
+package rasppi.api.objects.dummypi;
 
 public class DummyVariable {
     public Integer ID;
