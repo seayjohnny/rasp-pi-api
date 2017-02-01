@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Button
+        android:text="Test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="206dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:id="@+id/label_bt_setting_auto"
+        android:text="@string/labael_bt_setting_auto"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox"
+        android:layout_alignBaseline="@+id/label_bt_setting_auto"
+        android:layout_alignBottom="@+id/label_bt_setting_auto"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"/>
+
+</RelativeLayout>

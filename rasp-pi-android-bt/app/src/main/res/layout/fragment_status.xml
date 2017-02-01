@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/label_status_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/label_status_state" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_state"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/label_status_state"
+        android:layout_above="@+id/label_status_name"
+        android:layout_marginStart="15dp" />
+
+    <TextView
+        android:text="@string/label_status_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_status_state"
+        android:id="@+id/label_status_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_name"
+        android:layout_toEndOf="@+id/label_status_name"
+        android:layout_above="@+id/label_status_address"
+        android:layout_marginStart="15dp" />
+
+    <TextView
+        android:text="@string/label_status_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_status_name"
+        android:id="@+id/label_status_address" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_address"
+        android:layout_toEndOf="@+id/label_status_address"
+        android:layout_above="@+id/label_status_duration"
+        android:layout_marginStart="15dp" />
+
+    <TextView
+        android:text="@string/label_status_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_status_address"
+        android:id="@+id/label_status_duration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_duration"
+        android:layout_toEndOf="@+id/label_status_duration"
+        android:layout_above="@+id/label_status_signal"
+        android:layout_marginStart="15dp" />
+
+    <TextView
+        android:text="@string/label_status_signal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_status_duration"
+        android:id="@+id/label_status_signal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_signal"
+        android:layout_toEndOf="@+id/label_status_signal"
+        android:layout_below="@+id/label_status_duration"
+        android:layout_marginStart="15dp" />
+
+</RelativeLayout>
