@@ -1,5 +1,6 @@
 package rasppi.api.objects;
 
+import rasppi.api.objects.dummypi.DummyPi;
 import rasppi.api.requests.GetVariableRequest;
 import rasppi.api.requests.UpdateVariableRequest;
 import rasppi.api.requests.ViewVariableRequest;
@@ -81,11 +82,11 @@ public class VariableObject{
     }
 
     public Integer getProtection() { return Protection;}
-
+    private void setProtection(Integer protection) { Protection = protection;}
     /**
      *  assignId:
-     *      Makes a call to the VariableRegister to reserve an id on the variable database and assign it to this
-     *      variable.
+     *      Makes a call to the VariableRegister to reserve an id on the variable database and
+     *      assign it to this variable.
      */
     private void assignId(){
          this.setId(Register.reserveVariable());
@@ -93,8 +94,8 @@ public class VariableObject{
 
     /**
      * viewRemoteValue:
-     *      Opens a ViewVariableRequest with only the id parameter to retrieve the variable's value currently stored on
-     *      the variable database.
+     *      Opens a ViewVariableRequest with only the id parameter to retrieve the variable's value
+     *      currently stored on the variable database.
      *
      * @return Object
      */
@@ -117,19 +118,20 @@ public class VariableObject{
 
     /**
      * refresh:
-     *      Opens a ViewVariableRequest with only the id parameter to restore this variable with the attributes stored
-     *      on the variable database.
+     *      Opens a ViewVariableRequest with only the id parameter to restore this variable with the
+     *      attributes stored on the variable database.
      *
      *      Example:
      *          We get a VariableObject from the variable database with the attributes
-     *          {id: 3, name: "var3", type: "integer", value: 12}. Within our code, we change the name and value of the
-     *          variable to "myVar" and "thisisvalue", respectively. Without using the update() method for our variable,
-     *          there are two versions of variable with id 3:
+     *          {id: 3, name: "var3", type: "integer", value: 12}. Within our code, we change the
+     *          name and value of the variable to "myVar" and "thisisvalue", respectively. Without
+     *          using the update() method for our variable, there are two versions of variable with
+     *          id 3:
      *          VariableDatabase - {id: 3, name: "var3", type: "integer", value: 12}
      *          Our Code - {id: 3, name: "myVar", type: "string", value: "thisisvalue"}
      *
-     *          refresh() will replace the attributes of our VariableObject with the attributes of the variable with the
-     *          same id found on the variable database. So then we have:
+     *          refresh() will replace the attributes of our VariableObject with the attributes of
+     *          the variable with the same id found on the variable database. So then we have:
      *          VariableDatabase - {id: 3, name: "var3", type: "integer", value: 12}
      *          Our Code - {id: 3, name: "var3", type: "integer", value: 12}
      *
@@ -179,7 +181,6 @@ public class VariableObject{
             this.setId(-1);
             this.setName(Null);
             this.setValue(Null);
-            Protection = 0;
         } else {
             // attempting to remove protected variable
         }
@@ -198,6 +199,7 @@ public class VariableObject{
             this.setId((Integer) data.get("id"));
             this.setName((String) data.get("name"));
             this.setValue(data.get("value"));
+            this.setProtection((Integer) data.get("protection"));
         } else {
             // attempting to load inaccessible variable
         }
@@ -243,7 +245,8 @@ public class VariableObject{
 
     @Override
     public String toString(){
-        return String.format("id: %d, name: %s, type: %s, value: %s, protection: %d", this.getId(), this.getName(),
-                this.getType(), this.getValue().toString(), this.getProtection());
+        return String.format("[id: %d | name: %s | type: %s | value: %s | protection: %d ]",
+                this.getId(), this.getName(), this.getType(), this.getValue().toString(),
+                this.getProtection());
     }
 }
